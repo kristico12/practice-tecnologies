@@ -31,18 +31,17 @@ const CheckBoxTable = forwardRef<HTMLInputElement, CheckBoxTableProps>((
 
   useEffect(() => {
     if (resolvedRef?.current?.indeterminate) {
-      resolvedRef.current.indeterminate  = indeterminate ?? false;
+      resolvedRef.current.indeterminate = indeterminate ?? false;
     }
   }, [resolvedRef, indeterminate])
   return (
-    <>
-      <input
-        className='h-5 w-5'
-        type="checkbox"
-        ref={resolvedRef}
-        {...rest}
-      />
-    </>
+    <input
+      data-testid="checkTable"
+      className='h-5 w-5'
+      type="checkbox"
+      ref={resolvedRef}
+      {...rest}
+    />
   )
 });
 

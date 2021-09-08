@@ -2,7 +2,7 @@ import {
   useTable, usePagination, HeaderGroup, useSortBy, useRowSelect, CellProps,
   HeaderProps
 } from 'react-table';
-import { Fragment, useMemo, useEffect } from 'react';
+import { Fragment, useMemo, useEffect, useRef } from 'react';
 import { tableProps } from './types';
 import PaginationTable from './components/paginationTable/paginationTable';
 import useViewport from '../../hoocks/viewPort';
@@ -22,11 +22,13 @@ function Table<T extends object>({
   isSort = true,
   loading,
   onCheck,
-  isCheck = true,
+  isCheck = false,
 }: tableProps<T>): React.ReactElement {
   const { widthScreen } = useViewport();
   const dataRows = useMemo(() => rowsList, [rowsList]);
   const titles = useMemo(() => columnsList, [columnsList]);
+  const didMountOnSort = useRef(false);
+  const didMountOnCheck = useRef(false);
 
   const {
     getTableProps,
@@ -57,30 +59,34 @@ function Table<T extends object>({
             id: 'id-select',
             ...(widthScreen > 640 && {
               Header: ({ getToggleAllPageRowsSelectedProps }: HeaderProps<T>) => (
-                <div>
-                  <CheckBoxTable props={{ ...getToggleAllPageRowsSelectedProps() }} />
-                </div>
+                <CheckBoxTable props={{ ...getToggleAllPageRowsSelectedProps() }} />
               )
             }),
             Cell: ({ row }: CellProps<T>) => (
-              <div>
-                <CheckBoxTable props={{ ...row.getToggleRowSelectedProps() }} />
-              </div>
+              <CheckBoxTable props={{ ...row.getToggleRowSelectedProps() }} />
             )
           }
         ] : []),
         ...columns
       ]);
-      
+
     }
   );
 
   useEffect(() => {
-    if (onSort) onSort(sortBy);
+    if (didMountOnSort.current) {
+      if (onSort) onSort(sortBy);
+    } else {
+      didMountOnSort.current = true;
+    }
   }, [onSort, sortBy]);
 
   useEffect(() => {
-    if (onCheck) onCheck(selectedRowIds);
+    if (didMountOnCheck.current) {
+      if (onCheck) onCheck(selectedRowIds);
+    } else {
+      didMountOnCheck.current = true;
+    }
   }, [onCheck, selectedRowIds]);
 
   const renderTitles = (headerGroup: HeaderGroup<T>) => {
@@ -93,6 +99,7 @@ function Table<T extends object>({
         <th
           {...column.getHeaderProps(column.getSortByToggleProps())}
           className='py-8 px-4 uppercase tracking-widest text-xs font-black'
+          data-testid="tHeadTh"
         >
           <div
             className='flex justify-evenly'
@@ -214,6 +221,7 @@ function Table<T extends object>({
           loading ?
             <tbody
               className='col-span-6'
+              data-testid="tbody-loading"
             >
               <tr
                 className='flex justify-center items-center tablet:table-row'
@@ -223,6 +231,7 @@ function Table<T extends object>({
                 >
                   <div
                     className='flex justify-center items-center'
+                    data-testid="loading-container"
                   >
                     <LoadingTable />
                   </div>
