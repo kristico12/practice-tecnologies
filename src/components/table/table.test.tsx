@@ -171,4 +171,20 @@ describe('Table Test', () => {
     expect(view.getAllByTestId(/tHeadTh/i)[1].querySelector('div')!.querySelector('picture')!).toBeTruthy();
     expect(setSort).toHaveBeenCalledTimes(2);
   });
+  it.only('validate function setPage', () => {
+    const setPage = jest.fn();
+    const view = render(<Table
+      columnsList={titleList}
+      rowsList={rowList}
+      loading={false}
+      currentPage={1}
+      totalPerPage={5}
+      totalFilter={100}
+      setPage={setPage}
+    />);
+    expect(view.container.querySelector('table')).toBeInTheDocument();
+    const nextPage = view.getByText(/>>/i) as HTMLButtonElement;
+    userEvent.click(nextPage);
+    expect(setPage).toHaveBeenCalledTimes(1);
+  });
 });

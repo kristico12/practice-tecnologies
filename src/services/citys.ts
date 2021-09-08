@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery } from 'react-query';
+import { UseQueryResult, useQuery, UseQueryOptions } from 'react-query';
 import { publicRequest } from '../utils/public-request';
 import { CitysAttr } from './types/citys';
 import { baseUrl } from '../utils/constantsEnv';
@@ -11,6 +11,7 @@ const useCitys = (
   limit: number,
   offset: number,
   order: SortingRule<CitysAttr>[],
+  options?: UseQueryOptions<CitysAttr[]>,
 ): UseQueryResult<CitysAttr[]> => {
   const queryResult = useQuery(
     [COMICS_KEY, limit, offset, order],
@@ -19,7 +20,9 @@ const useCitys = (
       if (order.length > 0) localEndpoint = `${localEndpoint}&$order=${order[0].id} ${order[0].desc ? 'DESC' : 'ASC'}`;
       const response = await publicRequest.get<CitysAttr[]>(localEndpoint);
       return response.data;
-    });
+    },
+    options  
+  );
   return queryResult;
 };
 
