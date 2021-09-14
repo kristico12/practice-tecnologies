@@ -171,7 +171,7 @@ describe('Table Test', () => {
     expect(view.getAllByTestId(/tHeadTh/i)[1].querySelector('div')!.querySelector('picture')!).toBeTruthy();
     expect(setSort).toHaveBeenCalledTimes(2);
   });
-  it.only('validate function setPage', () => {
+  it('validate function setPage', () => {
     const setPage = jest.fn();
     const view = render(<Table
       columnsList={titleList}
